@@ -43,10 +43,13 @@ async function startServer() {
       createContext,
     })
   );
-  // development mode uses Vite, production mode uses static files
-  if (process.env.NODE_ENV === "development") {
+  const useViteMiddleware =
+    process.env.NODE_ENV === "development" && !process.env.VITE_DEV_SERVER_URL;
+
+  // development mode uses Vite unless an external dev server is running
+  if (useViteMiddleware) {
     await setupVite(app, server);
-  } else {
+  } else if (process.env.NODE_ENV !== "development") {
     serveStatic(app);
   }
 
