@@ -3,6 +3,7 @@
 .pnpm-store/
 .env
 .env.*
+!.env.example
 dist
 build
 .vite
