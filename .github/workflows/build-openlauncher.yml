@@ -1,0 +1,43 @@
+name: Build OpenLauncher APK
+
+on:
+  push:
+    branches:
+      - tmp-build-openlauncher
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout helper repo
+        uses: actions/checkout@v4
+
+      - name: Checkout OpenLauncher
+        uses: actions/checkout@v4
+        with:
+          repository: dw2lam/openlauncher
+          path: openlauncher
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x openlauncher/gradlew
+
+      - name: Build debug APK
+        working-directory: openlauncher
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: openlauncher-debug-apk
+          path: openlauncher/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
